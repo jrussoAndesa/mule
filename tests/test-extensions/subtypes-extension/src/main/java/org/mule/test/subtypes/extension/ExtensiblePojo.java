@@ -4,29 +4,23 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.heisenberg.extension.model;
+package org.mule.test.subtypes.extension;
 
 import org.mule.runtime.extension.api.annotation.Extensible;
+import org.mule.runtime.extension.api.annotation.Parameter;
 
+import java.util.List;
+
+/**
+ * //TODO
+ */
 @Extensible
-public interface Weapon
+public class ExtensiblePojo
 {
+    @Parameter
+    String myString;
 
-    class WeaponAttributes
-    {
+    @Parameter
+    List<Integer> numbers;
 
-        public String getBrand()
-        {
-            return brand;
-        }
-
-        public void setBrand(String brand)
-        {
-            this.brand = brand;
-        }
-
-        public String brand;
-    }
-
-    String kill();
 }

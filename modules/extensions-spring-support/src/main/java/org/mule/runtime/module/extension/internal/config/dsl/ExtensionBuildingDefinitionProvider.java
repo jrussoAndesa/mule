@@ -13,7 +13,6 @@ import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder
 import static org.mule.runtime.config.spring.dsl.api.TypeDefinition.fromType;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.module.extension.internal.config.dsl.ExtensionXmlNamespaceInfo.EXTENSION_NAMESPACE;
-import static org.mule.runtime.module.extension.internal.util.IntrospectionUtils.getMetadataType;
 import static org.mule.runtime.module.extension.internal.util.IntrospectionUtils.isInstantiable;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getClassLoader;
 import org.mule.metadata.api.ClassTypeLoader;
@@ -40,10 +39,10 @@ import org.mule.runtime.extension.api.introspection.operation.RuntimeOperationMo
 import org.mule.runtime.extension.api.introspection.parameter.ParameterModel;
 import org.mule.runtime.extension.api.introspection.property.ExportModelProperty;
 import org.mule.runtime.extension.api.introspection.property.SubTypesModelProperty;
-import org.mule.runtime.extension.api.introspection.property.XmlModelProperty;
 import org.mule.runtime.extension.api.introspection.source.RuntimeSourceModel;
 import org.mule.runtime.extension.api.introspection.source.SourceModel;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
+import org.mule.runtime.extension.xml.dsl.api.property.XmlModelProperty;
 import org.mule.runtime.module.extension.internal.config.ExtensionConfig;
 import org.mule.runtime.module.extension.internal.config.dsl.config.ConfigurationDefinitionParser;
 import org.mule.runtime.module.extension.internal.config.dsl.connection.ConnectionProviderDefinitionParser;
@@ -59,6 +58,7 @@ import org.mule.runtime.module.extension.internal.introspection.SubTypesMappingC
 import org.mule.runtime.module.extension.internal.runtime.DynamicConfigPolicy;
 import org.mule.runtime.module.extension.internal.util.IdempotentExtensionWalker;
 import org.mule.runtime.module.extension.internal.util.IntrospectionUtils;
+import org.mule.runtime.module.extension.internal.util.MetadataTypeUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -232,12 +232,11 @@ public class ExtensionBuildingDefinitionProvider implements ComponentBuildingDef
 
     private void registerExportedTypesTopLevelParsers(ExtensionModel extensionModel, Builder definitionBuilder)
     {
-        //TODO MDM-7 replace isInstantiableWithParameters
-        final ClassTypeLoader typeLoader = ExtensionsTypeLoaderFactory.getDefault().createTypeLoader(getClassLoader(extensionModel));
-        extensionModel.getModelProperty(ExportModelProperty.class).map(ExportModelProperty::getExportedClasses)
+        extensionModel.getModelProperty(ExportModelProperty.class)
+                .map(ExportModelProperty::getExportedTypes)
                 .ifPresent(exportedTypes -> exportedTypes.stream()
-                        .filter(IntrospectionUtils::isInstantiableWithParameters)
-                        .map(type -> getMetadataType(type, typeLoader))
+                        .filter(MetadataTypeUtils::isInstantiable)
+                        .filter(MetadataTypeUtils::hasExposedFields)
                         .forEach(exportedType -> registerTopLevelParameter(exportedType, definitionBuilder)));
     }
 }

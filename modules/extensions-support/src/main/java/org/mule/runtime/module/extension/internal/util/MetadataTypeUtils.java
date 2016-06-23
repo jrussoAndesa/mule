@@ -7,13 +7,14 @@
 package org.mule.runtime.module.extension.internal.util;
 
 import static org.mule.metadata.java.api.utils.JavaTypeUtils.getType;
-import static org.mule.runtime.module.extension.internal.util.IntrospectionUtils.isInstantiable;
+import org.mule.metadata.api.annotation.TypeIdAnnotation;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.builder.UnionTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.NullType;
 import org.mule.metadata.api.model.ObjectType;
 import org.mule.metadata.api.model.UnionType;
+import org.mule.metadata.java.api.annotation.ClassInformationAnnotation;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.module.extension.internal.introspection.SubTypesMappingContainer;
 
@@ -96,7 +97,7 @@ public final class MetadataTypeUtils
             return baseType;
         }
 
-        boolean baseIsInstantiable = isInstantiable(getType(baseType, classLoader));
+        boolean baseIsInstantiable = isInstantiable(baseType);
         if (subTypes.size() == 1 && !baseIsInstantiable)
         {
             // avoid single type union
@@ -112,5 +113,24 @@ public final class MetadataTypeUtils
         UnionTypeBuilder<?> unionTypeBuilder = BaseTypeBuilder.create(baseType.getMetadataFormat()).unionType();
         union.build().forEach(unionTypeBuilder::of);
         return unionTypeBuilder.build();
+    }
+
+    public static String getTypeId(MetadataType metadataType)
+    {
+        return org.mule.metadata.utils.MetadataTypeUtils.getSingleAnnotation(metadataType, TypeIdAnnotation.class)
+                .map(TypeIdAnnotation::getValue)
+                .orElseThrow(() -> new IllegalArgumentException("Type has no id"));
+    }
+
+    public static boolean isInstantiable(MetadataType metadataType)
+    {
+        return org.mule.metadata.utils.MetadataTypeUtils.getSingleAnnotation(metadataType, ClassInformationAnnotation.class)
+                .map(ClassInformationAnnotation::isInstantiable)
+                .orElseThrow(() -> new IllegalArgumentException("No class information found for the given type: " + getTypeId(metadataType)));
+    }
+
+    public static boolean hasExposedFields(MetadataType metadataType)
+    {
+        return metadataType instanceof ObjectType && !((ObjectType) metadataType).getFields().isEmpty();
     }
 }

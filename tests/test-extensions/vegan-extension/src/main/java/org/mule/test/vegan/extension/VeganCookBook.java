@@ -6,8 +6,11 @@
  */
 package org.mule.test.vegan.extension;
 
+import org.mule.runtime.extension.api.annotation.Extensible;
+
 import java.util.List;
 
+@Extensible
 public class VeganCookBook
 {
     List<String> recipes;

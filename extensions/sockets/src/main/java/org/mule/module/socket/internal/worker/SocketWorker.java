@@ -20,10 +20,16 @@ public abstract class SocketWorker implements Disposable, Work
 
     protected final MuleContext muleContext;
     protected final MessageHandler<InputStream, SocketAttributes> messageHandler;
+    protected String encoding;
 
     protected SocketWorker(MuleContext muleContext, MessageHandler<InputStream, SocketAttributes> messageHandler)
     {
         this.muleContext = muleContext;
         this.messageHandler = messageHandler;
+    }
+
+    public void setEncoding(String encoding)
+    {
+        this.encoding = encoding;
     }
 }

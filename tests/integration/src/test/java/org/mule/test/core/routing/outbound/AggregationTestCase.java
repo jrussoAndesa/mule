@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.DefaultMuleMessage;
 import org.mule.runtime.core.MessageExchangePattern;
@@ -19,7 +20,6 @@ import org.mule.runtime.core.api.MuleMessage;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.store.ObjectStoreException;
-import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.runtime.core.routing.AggregationException;
 import org.mule.runtime.core.routing.EventGroup;
 import org.mule.runtime.core.routing.SimpleCollectionAggregator;
@@ -37,8 +37,9 @@ import org.junit.Test;
 /**
  * Test that aggregators preserve message order in synchronous scenarios (MULE-5998)
  */
+//TODO: MULE-9303
 @Ignore("MULE-9303 Review aggregator sorting using runFlow")
-public class AggregationTestCase extends FunctionalTestCase
+public class AggregationTestCase extends AbstractIntegrationTestCase
 {
 
     private static final String PAYLOAD = "Long string that will be broken up into multiple messages";

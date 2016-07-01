@@ -46,12 +46,10 @@ public class SocketOperations
      */
     @MetadataScope(outputResolver = SocketMetadataResolver.class, keysResolver = SocketMetadataResolver.class)
     public MuleMessage<?, ?> send(@Connection RequesterConnection connection,
-                                  @Optional(defaultValue = "#[payload]") @NoRef Object data,
                                   @UseConfig RequesterConfig config,
+                                  @Optional(defaultValue = "#[payload]") @NoRef Object content,
                                   @Optional String outputEncoding,
-                                  @Optional(defaultValue = "#[payload]") Object content,
                                   String hasResponse, // TODO Add metadata https://www.mulesoft.org/jira/browse/MULE-9894
-                                  @Optional(defaultValue = "UTF-8") String encoding, //TODO support encoding MULE-9900
                                   MuleMessage<?, ?> muleMessage) throws ConnectionException, IOException
     {
         SocketClient client = connection.getClient();
